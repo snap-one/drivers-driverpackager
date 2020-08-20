@@ -9,6 +9,7 @@ import os
 import xml.etree.ElementTree as ET
 from M2Crypto import BIO, Rand, SMIME, X509
 
+
 def get_devicedata(filename):
     with open(filename, "rb") as file:
         try:
@@ -24,12 +25,14 @@ def get_devicedata(filename):
 
     return devicedata
 
+
 def get_encrypt_filename(filename):
     devicedata = get_devicedata(filename)
     node = devicedata.find('config/script[@encryption="2"]')
     if node is None:
         return None
     return node.attrib['file']
+
 
 def encrypt(filename, outfilename):
     PUBLIC_KEY = '''-----BEGIN CERTIFICATE-----
@@ -62,7 +65,7 @@ Zwi18AY=
     with open(filename, 'rb') as file:
         str = file.read()
         buf = BIO.MemoryBuffer(str)
-    
+
         smime = SMIME.SMIME()
         x509 = X509.load_cert_string(PUBLIC_KEY)
         x509_stack = X509.X509_Stack()
@@ -73,9 +76,10 @@ Zwi18AY=
         pkcs7 = smime.encrypt(buf, flags=SMIME.PKCS7_BINARY)
         outbuf = BIO.MemoryBuffer()
         pkcs7.write_der(outbuf)
-    
+
         with open(outfilename, 'wb') as outfile:
             outfile.write(outbuf.read())
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 2:
@@ -83,4 +87,3 @@ if __name__ == '__main__':
     else:
         print ('No input or output file specified')
         sys.exit(-1)
-

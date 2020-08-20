@@ -18,6 +18,7 @@ import encrypt_c4z
 squishLua_ = True
 c4i_ = False
 
+
 def GetSquishySource(srcDir):
     squishyLines = []
     srcToRemove = []
@@ -33,14 +34,17 @@ def GetSquishySource(srcDir):
         for s in squishyLines:
             if len(s) == 3 and s is not None:
                 # If the 3rd column in the squishy file contains data, use that.
-                path = s[2].replace('Module "', '').replace('"', '').replace("\n", '')
+                path = s[2].replace('Module "', '').replace(
+                    '"', '').replace("\n", '')
                 srcToRemove.append(os.path.basename(path))
             elif len(s) == 2 and s is not None:
                 # If the 3rd column in the squishy file contains no data, then use the 2nd column.
-                path = s[1].replace('Module "', '').replace('"', '').replace("\n", '').replace(".", os.path.sep) + ".lua"
+                path = s[1].replace('Module "', '').replace('"', '').replace(
+                    "\n", '').replace(".", os.path.sep) + ".lua"
                 srcToRemove.append(os.path.basename(path))
 
     return srcToRemove
+
 
 def GetSquishyOutputFile(srcDir):
     lines = []
@@ -55,10 +59,12 @@ def GetSquishyOutputFile(srcDir):
                 lines.append(line.split(' '))
 
         for s in lines:
-            path = s[1].replace('Output "', '').replace('"', '').replace("\n", '')
+            path = s[1].replace('Output "', '').replace(
+                '"', '').replace("\n", '')
             outputFile = path
 
     return str(outputFile).rstrip('\r')
+
 
 def GetSquishyInputFile(srcDir):
     lines = []
@@ -73,20 +79,24 @@ def GetSquishyInputFile(srcDir):
                 lines.append(line.split(' '))
 
         for s in lines:
-            path = s[1].replace('Main "', '').replace('"', '').replace("\n", '')
+            path = s[1].replace('Main "', '').replace(
+                '"', '').replace("\n", '')
             inputFile = path
 
     return str(inputFile).rstrip('\r')
+
 
 def setSquishLua(squishLua):
     global squishLua_
     squishLua_ = squishLua
     return squishLua_
 
+
 def setC4i(c4i):
     global c4i_
     c4i_ = c4i
     return c4i_
+
 
 def compressLists(c4z, dirIn, dirsIn, filesIn, encryptedLua=None):
     try:
@@ -126,20 +136,22 @@ def compressLists(c4z, dirIn, dirsIn, filesIn, encryptedLua=None):
                             if f not in GetSquishySource(dirIn):
                                 files.insert(i, {'c4zDir': c4zDir, 'name': f})
 
-                    compressFileList(c4z, dirIn, root, files, zip, encryptedLua)
+                    compressFileList(c4z, dirIn, root, files,
+                                     zip, encryptedLua)
                     if dir["recurse"] == str('false').lower():
                         break
 
     except zipfile.BadZipfile as ex:
         if os.path.exists(c4z):
             os.remove(c4z)
-        print "Error building", c4z, "... exception:", ex.message
+        print("Error building", c4z, "... exception: BadZipfile")
         return False
-    except OSError, ex:
-        print "Error building", c4z, "... exception:", ex.strerror
+    except OSError as ex:
+        print("Error building", c4z, "... exception:", ex.strerror)
         return False
 
     return True
+
 
 def compressFileList(c4z, dir, root, files, zip, encryptedLua):
     tempDir = None
@@ -149,7 +161,8 @@ def compressFileList(c4z, dir, root, files, zip, encryptedLua):
         for file in files:
             if file["c4zDir"] and dir != root:
                 tRoot, dName = os.path.split(root)
-            filePath = os.path.join(file["c4zDir"], os.path.basename(file["name"]))
+            filePath = os.path.join(
+                file["c4zDir"], os.path.basename(file["name"]))
             arcPath = os.path.join(".", filePath)
             path, fName = os.path.split(file["name"])
             if encryptedLua is not None and os.path.normpath(arcPath) == os.path.normpath(encryptedLua):
@@ -177,7 +190,8 @@ def compressFileList(c4z, dir, root, files, zip, encryptedLua):
                         pass
                     else:
                         Log("Encrypting %s..." % (os.path.basename(tempFile)))
-                        encrypt_c4z.encrypt(os.path.join(root, GetSquishyOutputFile(root)), tempFile)
+                        encrypt_c4z.encrypt(os.path.join(
+                            root, GetSquishyOutputFile(root)), tempFile)
                         zip.write(tempFile, arcname=arcPath + '.encrypted')
 
             elif encryptedLua is not None and squishLua_ is False and fName != encryptedLua:
@@ -200,16 +214,19 @@ def compressFileList(c4z, dir, root, files, zip, encryptedLua):
                             lua.close()
 
                             # Clean up any temporary directories that start with "Squished_Lua_"
-                            directories = next(os.walk(tempfile.gettempdir()))[1]
+                            directories = next(
+                                os.walk(tempfile.gettempdir()))[1]
                             for d in directories:
                                 if str(d).startswith("Squished_Lua_"):
-                                    shutil.rmtree(tempfile.gettempdir() + os.path.sep + d)
+                                    shutil.rmtree(
+                                        tempfile.gettempdir() + os.path.sep + d)
 
                             # Create a new temporary directory to store the Squished Lua.
-                            luaPath = tempfile.mkdtemp("","Squished_Lua_")
+                            luaPath = tempfile.mkdtemp("", "Squished_Lua_")
 
                             # Write the contents of the squishedLua variable to file.
-                            f = codecs.open(os.path.join(luaPath, "driver.lua.squished"), 'w', encoding='utf-8')
+                            f = codecs.open(os.path.join(
+                                luaPath, "driver.lua.squished"), 'w', encoding='utf-8')
                             f.writelines(squishedLua)
                             f.close()
 
@@ -240,6 +257,7 @@ def compressFileList(c4z, dir, root, files, zip, encryptedLua):
         if tempDir:
             shutil.rmtree(tempDir)
 
+
 def compress(c4z, dir, encryptedLua=None):
     tempDir = None
     try:
@@ -260,10 +278,12 @@ def compress(c4z, dir, encryptedLua=None):
                         Log("Encrypting %s..." % (os.path.basename(tempFile)))
                         encrypt_c4z.encrypt(os.path.join(root, f), tempFile)
                         if squishLua_:
-                            newFile = tempDir + os.path.sep + GetSquishyInputFile(root)
+                            newFile = tempDir + os.path.sep + \
+                                GetSquishyInputFile(root)
                             oldFile = tempFile
                             os.rename(oldFile, newFile)
-                            arcpath = os.path.join(os.path.relpath(root, dir), GetSquishyInputFile(root))
+                            arcpath = os.path.join(os.path.relpath(
+                                root, dir), GetSquishyInputFile(root))
                             zip.write(newFile, arcname=arcpath + '.encrypted')
                         if squishLua_ is False:
                             zip.write(tempFile, arcname=arcpath + '.encrypted')
@@ -286,16 +306,17 @@ def compress(c4z, dir, encryptedLua=None):
     except zipfile.BadZipfile as ex:
         if os.path.exists(c4z):
             os.remove(c4z)
-        print "Error building", c4z, "... exception:", ex.message
+        print("Error building", c4z, "... exception: BadZipfile")
         return False
-    except OSError, ex:
-        print "Error building", c4z, "... exception:", ex.strerror
+    except OSError as ex:
+        print("Error building", c4z, "... exception:", ex.strerror)
         return False
     finally:
         if tempDir:
             shutil.rmtree(tempDir)
 
     return True
+
 
 def extract(c4z, dir):
     try:
@@ -308,16 +329,22 @@ def extract(c4z, dir):
 
     return True
 
+
 def Log(line):
     print("{}: {}".format(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"), line))
     sys.stdout.flush()
 
+
 def package(inargs):
-    parser = argparse.ArgumentParser(description="Handles creation and extraction of C4Z drivers")
-    parser.add_argument('-v', '--verbose', action='store_true', help="Enables verbose output")
+    parser = argparse.ArgumentParser(
+        description="Handles creation and extraction of C4Z drivers")
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help="Enables verbose output")
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('-x', '--extract', action='store_true', help="Extracts rather than compresses the C4Z")
-    group.add_argument('-c', '--compress', action='store_true', help="Compresses the C4Z (default)")
+    group.add_argument('-x', '--extract', action='store_true',
+                       help="Extracts rather than compresses the C4Z")
+    group.add_argument('-c', '--compress', action='store_true',
+                       help="Compresses the C4Z (default)")
     parser.add_argument('c4z', help="path to the C4Z file")
     parser.add_argument('dir', help="path to the C4Z contents directory")
     args = parser.parse_args(inargs)
@@ -326,12 +353,13 @@ def package(inargs):
         return 0 if extract(args.c4z, args.dir) else -1
     else:
         driverXml = os.path.join(args.dir, "driver.xml")
-        driverLua = encrypt_c4z.get_encrypt_filename(driverXml)  # may be None if no encryption specified
+        driverLua = encrypt_c4z.get_encrypt_filename(
+            driverXml)  # may be None if no encryption specified
         if compress(args.c4z, args.dir, driverLua):
             return 0
 
     return -1
 
+
 if __name__ == '__main__':
     sys.exit(package(sys.argv[1:]))
-

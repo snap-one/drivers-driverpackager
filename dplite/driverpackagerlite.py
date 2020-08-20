@@ -47,6 +47,7 @@ import glob
 import encrypt_c4z
 import createsquishy as csq
 
+
 class DriverPackagerLite(object):
     def __init__(self, args):
         self.verbose = args.verbose
@@ -69,7 +70,6 @@ class DriverPackagerLite(object):
         if not os.path.isdir(self.dstdir):
             os.makedirs(self.dstdir)
 
-
     def Squish(self, root):
         self.Log("Squishing Lua source...")
         oldPath = os.environ['PATH']
@@ -83,14 +83,18 @@ class DriverPackagerLite(object):
         cmdLine = ['luajit']
 
         # When running as an exe
-        if hasattr(sys,"frozen") and sys.frozen in ("windows_exe", "console_exe"):
-            cmdLine.append(os.path.join(os.path.dirname(os.path.realpath(sys.executable)), "squish"))
-            os.environ['PATH'] = os.path.dirname(os.path.realpath(sys.executable)) + ";" + oldPath
+        if getattr(sys, 'frozen', False):
+            cmdLine.append(os.path.join(os.path.dirname(
+                os.path.realpath(sys.executable)), "squish"))
+            os.environ['PATH'] = os.path.dirname(
+                os.path.realpath(sys.executable)) + ";" + oldPath
         else:
-            cmdLine.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "squish"))
-            os.environ['PATH'] = os.path.dirname(os.path.realpath(os.path.realpath(__file__))) + os.pathsep + oldPath
+            cmdLine.append(os.path.join(os.path.dirname(
+                os.path.realpath(__file__)), "squish"))
+            os.environ['PATH'] = os.path.dirname(os.path.realpath(
+                os.path.realpath(__file__))) + os.pathsep + oldPath
 
-        #cmdLine.append('-q')
+        # cmdLine.append('-q')
         cmdLine.append('--no-minify')
 
         cmdLine.append(root)
@@ -100,16 +104,18 @@ class DriverPackagerLite(object):
             print ('CommandLine: %s' % ' '.join(cmdLine))
             subprocess.check_call(cmdLine, stderr=subprocess.STDOUT)
         except OSError as ex:
-            raise Exception("DriverPackagerLite: Error squishing lua %s" % (ex))
+            raise Exception(
+                "DriverPackagerLite: Error squishing lua %s" % (ex))
         except subprocess.CalledProcessError as ex:
-            raise Exception("DriverPackagerLite: Lua squish failed: %s while processing %s" % (ex, root))
+            raise Exception(
+                "DriverPackagerLite: Lua squish failed: %s while processing %s" % (ex, root))
         finally:
             pass
             os.environ["PATH"] = oldPath
             os.chdir(cwd)
 
-
     # create a c4z file with all the Lua files pulled into a single file
+
     def createSquishedC4z(self, c4z, dir, squishedFileName, encryptIt):
         csq.createsq(self.manifest)
         self.Squish(dir)
@@ -119,36 +125,40 @@ class DriverPackagerLite(object):
                 # add in driver.xml
                 zip.write("driver.xml")
 
-                #add in all the stuff in the www directory and its sub-directories
-                self.compressDirsLists(".", [{'c4zDir': "www", 'recurse': "true", 'name': "www"}], zip)
+                # add in all the stuff in the www directory and its sub-directories
+                self.compressDirsLists(
+                    ".", [{'c4zDir': "www", 'recurse': "true", 'name': "www"}], zip)
 
                 if encryptIt:
                     # encrypt the squished file and then include it.
                     self.Log("Encrypting %s..." % (squishedFileName))
-                    encrypt_c4z.encrypt(squishedFileName, "driver.lua.encrypted")
-         
+                    encrypt_c4z.encrypt(
+                        squishedFileName, "driver.lua.encrypted")
+
                     zip.write("driver.lua.encrypted")
                 else:
                     # rename the squished file to Driver.lua and include it
                     if os.path.exists(os.path.join(dir, "driver.lua")):
                         os.remove(os.path.join(dir, "driver.lua"))
 
-                    shutil.copyfile(squishedFileName, os.path.join(dir, "driver.lua"))
+                    shutil.copyfile(squishedFileName,
+                                    os.path.join(dir, "driver.lua"))
                     zip.write("driver.lua")
 
         except zipfile.BadZipfile as ex:
             if os.path.exists(c4z):
                 os.remove(c4z)
-            self.Log ("Error building %s  ...exception: %s" % c4z, ex.message)
+            self.Log("Error building %s  ...exception: %s" % (c4z, ex.message))
             return False
         except OSError as ex:
-            self.Log ("Error building %s  ...exception: %s" % c4z, ex.strerror)
+            self.Log("Error building %s  ...exception: %s" %
+                     (c4z, ex.strerror))
             return False
 
         return True
 
+    # create a c4z file with the internal directory structure
 
-    # create a c4z file with the internal directory structure 
     def createC4z(self, c4z, srcDir, dirsList, filesList, encryptIt):
         try:
             with zipfile.ZipFile(c4z, 'w', compression=zipfile.ZIP_DEFLATED) as zip:
@@ -164,9 +174,8 @@ class DriverPackagerLite(object):
                             curFileInfo['name'] = "driver.lua.encrypted"
                             break
 
-                #add in files
+                # add in files
                 self.compressFileList(".", srcDir, filesList, zip)
-
 
         except zipfile.BadZipfile as ex:
             if os.path.exists(c4z):
@@ -179,8 +188,8 @@ class DriverPackagerLite(object):
 
         return True
 
-
     # a directory and its sub-directories into the zip file
+
     def compressDirsLists(self, dirIn, dirsIn, zip):
         # Add directories
         for dir in dirsIn:
@@ -222,7 +231,8 @@ class DriverPackagerLite(object):
         for file in files:
             tRoot, dName = os.path.split(root)
 
-            filePath = os.path.join(file["c4zDir"], os.path.basename(file["name"]))
+            filePath = os.path.join(
+                file["c4zDir"], os.path.basename(file["name"]))
             arcPath = os.path.join(".", filePath)
             path, fName = os.path.split(file["name"])
 
@@ -231,7 +241,6 @@ class DriverPackagerLite(object):
             zip.write(sourcepath, arcname=arcPath)
 
         return True
-
 
     def GetSquishyOutputFile(self, srcDir):
         lines = []
@@ -246,11 +255,11 @@ class DriverPackagerLite(object):
                     lines.append(line.split(' '))
 
             for s in lines:
-                path = s[1].replace('Output "', '').replace('"', '').replace("\n", '')
+                path = s[1].replace('Output "', '').replace(
+                    '"', '').replace("\n", '')
                 outputFile = path
 
         return str(outputFile).rstrip('\r')
-
 
     def GetStartLuaFilename(self, filename):
         c4zStartFile = None
@@ -258,7 +267,8 @@ class DriverPackagerLite(object):
             xmlTree = ElementTree.parse(filename)
             xmlRoot = xmlTree.getroot()
         except ElementTree.ParseError as ex:
-            raise Exception("DriverPackagerLite: Invalid XML (%s): %s" % (filename, ex))
+            raise Exception(
+                "DriverPackagerLite: Invalid XML (%s): %s" % (filename, ex))
         else:
             script = xmlRoot.findall('./config/script')
             for s in script:
@@ -269,15 +279,14 @@ class DriverPackagerLite(object):
 
         return c4zStartFile
 
-
     def CleanupTmpFile(self, root):
         try:
             if os.path.exists(os.path.join(root, "driver.lua.tmp")):
-                shutil.copyfile(os.path.join(root, "driver.lua.tmp"), os.path.join(root, "driver.lua"))
+                shutil.copyfile(os.path.join(root, "driver.lua.tmp"),
+                                os.path.join(root, "driver.lua"))
                 os.remove(os.path.join(root, "driver.lua.tmp"))
         except Exception as e:
             self.Log("Unable to remove driver.lua.tmp file or file does not exist")
-
 
     def ParseXml(self, xmlRoot, root, count, errCount):
         c4zName = ''
@@ -285,17 +294,20 @@ class DriverPackagerLite(object):
         c4zStartFile = ''
         c4zDirs = []
         c4zFiles = []
- 
+
         if xmlRoot.tag != 'Driver':
-            raise Exception("DriverPackagerLite: Invalid XML: Missing tag 'Driver'")
+            raise Exception(
+                "DriverPackagerLite: Invalid XML: Missing tag 'Driver'")
 
         driverType = xmlRoot.attrib.get('type')
         if driverType == None:
-            raise Exception("DriverPackagerLite: Invalid XML: Missing tag 'type'")
+            raise Exception(
+                "DriverPackagerLite: Invalid XML: Missing tag 'type'")
 
         driverName = xmlRoot.attrib.get('name')
         if driverName == None:
-            raise Exception("DriverPackagerLite: Invalid XML: Missing tag 'name'")
+            raise Exception(
+                "DriverPackagerLite: Invalid XML: Missing tag 'name'")
 
         squishFlag = xmlRoot.attrib.get('squishLua')
         if((squishFlag != None) and (not self.blockSquish)):
@@ -303,17 +315,19 @@ class DriverPackagerLite(object):
 
         c4zName = '.'.join((driverName, driverType))
 
-        shutil.copyfile(os.path.join(root, "driver.lua"), os.path.join(root, "driver.lua.tmp"))
+        shutil.copyfile(os.path.join(root, "driver.lua"),
+                        os.path.join(root, "driver.lua.tmp"))
 
         prepackageCmds = xmlRoot.find('PrepackageCommands')
         if prepackageCmds != None:
             for prepackageCmd in prepackageCmds:
                 print ("%s %s" % (prepackageCmd.tag, prepackageCmd.text))
                 if prepackageCmd.tag != 'PrepackageCommand':
-                    self.Log("Invalid XML: Found tag '%s', should be 'PrepackageCommand'" % (prepackageCmd.tag))
+                    self.Log("Invalid XML: Found tag '%s', should be 'PrepackageCommand'" % (
+                        prepackageCmd.tag))
                     continue
 
-                #execute the command
+                # execute the command
                 osCommand = prepackageCmd.text.replace("\\", os.path.sep)
                 osCommand = osCommand.replace("/", os.path.sep)
                 if (os.system(osCommand) != 0):
@@ -321,34 +335,38 @@ class DriverPackagerLite(object):
 
         items = xmlRoot.find('Items')
         if items == None:
-            raise Exception("DriverPackagerLite: Invalid XML: Missing tag 'Items'")
+            raise Exception(
+                "DriverPackagerLite: Invalid XML: Missing tag 'Items'")
 
         if self.allowExecute:
-            #Add C4:AllowExecute(true) to file
+            # Add C4:AllowExecute(true) to file
             print ("C4:AllowExecute(true) being added to file")
             with open(os.path.join(root, "driver.lua"), "a") as myfile:
                 myfile.write("\nC4:AllowExecute(true)\n")
                 myfile.write("\ngIsDevelopmentVersionOfDriver = true\n")
 
-
         for item in items:
             if item.tag != 'Item':
-                self.Log("Invalid XML: Found tag '%s', should be 'Item'" % (item.tag))
+                self.Log("Invalid XML: Found tag '%s', should be 'Item'" %
+                         (item.tag))
                 continue
 
             # Mandatory item attributes
             itemType = item.attrib.get('type')
             if itemType == None:
                 self.CleanupTmpFile(root)
-                raise Exception("DriverPackagerLite: Invalid XML: Missing tag 'Item' subtag 'type'")
+                raise Exception(
+                    "DriverPackagerLite: Invalid XML: Missing tag 'Item' subtag 'type'")
 
             itemName = item.attrib.get('name')
             if itemName == None:
                 self.CleanupTmpFile(root)
-                raise Exception("DriverPackagerLite: Invalid XML: Missing tag 'Item' subtag 'name'")
+                raise Exception(
+                    "DriverPackagerLite: Invalid XML: Missing tag 'Item' subtag 'name'")
 
             # If optional item attribute 'exclude' is True, skip it
-            exclude = True if item.attrib.get('exclude') == str('true').lower() else False
+            exclude = True if item.attrib.get(
+                'exclude') == str('true').lower() else False
             if exclude:
                 continue
 
@@ -356,11 +374,15 @@ class DriverPackagerLite(object):
                 # Verify directory Item exists
                 if not os.path.exists(os.path.join(root, itemName)):
                     self.CleanupTmpFile(root)
-                    raise Exception("DriverPackagerLite: Error, manifest 'dir' Item '%s' does not exist." % (itemName))
+                    raise Exception(
+                        "DriverPackagerLite: Error, manifest 'dir' Item '%s' does not exist." % (itemName))
 
-                recurse = True if item.attrib.get('recurse') == str('true').lower() else False
-                c4zDir = item.attrib.get('c4zDir') if item.attrib.get('c4zDir') != None else ''
-                c4zDirs.append({'c4zDir': c4zDir, 'recurse': recurse, 'name': itemName})
+                recurse = True if item.attrib.get(
+                    'recurse') == str('true').lower() else False
+                c4zDir = item.attrib.get('c4zDir') if item.attrib.get(
+                    'c4zDir') != None else ''
+                c4zDirs.append(
+                    {'c4zDir': c4zDir, 'recurse': recurse, 'name': itemName})
 
             elif itemType == 'file':
                 if c4zStartFile:
@@ -371,12 +393,14 @@ class DriverPackagerLite(object):
                 # Verify file Item exists
                 if not os.path.exists(os.path.join(root, itemName)):
                     self.CleanupTmpFile(root)
-                    raise Exception("DriverPackagerLite: Error, manifest 'file' Item '%s' does not exist in '%s'." % (itemName, root))
+                    raise Exception(
+                        "DriverPackagerLite: Error, manifest 'file' Item '%s' does not exist in '%s'." % (itemName, root))
 
                 # Get the script section from driver.xml
                 if itemName == 'driver.xml':
                     c4zDriverXmlFound = True
-                    c4zStartFile = self.GetStartLuaFilename(os.path.join(root, itemName))
+                    c4zStartFile = self.GetStartLuaFilename(
+                        os.path.join(root, itemName))
 
                     # Read driver.xml  We need to check for the encryption flag.
                     xmlTree = ElementTree.parse(os.path.join(root, itemName))
@@ -388,16 +412,20 @@ class DriverPackagerLite(object):
                         if c4zScriptEncryption == '2':
                             self.doEncrypt = True
 
-                c4zDir = item.attrib.get('c4zDir') if item.attrib.get('c4zDir') != None else ''
+                c4zDir = item.attrib.get('c4zDir') if item.attrib.get(
+                    'c4zDir') != None else ''
                 c4zFiles.append({'c4zDir': c4zDir, 'name': itemName})
 
         if not c4zDriverXmlFound:
-            raise Exception("DriverPackagerLite: Error, manifest 'file' Item 'driver.xml' was not found.")
+            raise Exception(
+                "DriverPackagerLite: Error, manifest 'file' Item 'driver.xml' was not found.")
 
         if self.doSquish:
-            self.createSquishedC4z(os.path.join(self.dstdir, c4zName), root, c4zStartFile, self.doEncrypt)
+            self.createSquishedC4z(os.path.join(
+                self.dstdir, c4zName), root, c4zStartFile, self.doEncrypt)
         else:
-            self.createC4z(os.path.join(self.dstdir, c4zName), root, c4zDirs, c4zFiles, self.doEncrypt)
+            self.createC4z(os.path.join(self.dstdir, c4zName),
+                           root, c4zDirs, c4zFiles, self.doEncrypt)
 
         self.CleanupTmpFile(root)
 
@@ -406,17 +434,17 @@ class DriverPackagerLite(object):
             for postpackageCmd in postpackageCmds:
                 print ("%s %s" % postpackageCmd.tag, postpackageCmd.text)
                 if postpackageCmd.tag != 'PostpackageCommand':
-                    self.Log("Invalid XML: Found tag '%s', should be 'PostpackageCommand'" % (item.tag))
+                    self.Log(
+                        "Invalid XML: Found tag '%s', should be 'PostpackageCommand'" % (item.tag))
                     continue
 
-                #execute the command
+                # execute the command
                 osCommand = postpackageCmd.text.replace("\\", os.path.sep)
                 osCommand = osCommand.replace("/", os.path.sep)
                 if (os.system(osCommand.text) != 0):
                     print ("Failed to execute postpackage command.")
 
         return True
-
 
     def CreateFromManifest(self, manifestPath):
         retcode = 0
@@ -427,7 +455,8 @@ class DriverPackagerLite(object):
             self.Log(ex)
             retcode = ex.errno
         except ElementTree.ParseError as ex:
-            self.Log("DriverPackagerLite: Invalid XML (%s): %s" % (manifestPath, ex))
+            self.Log("DriverPackagerLite: Invalid XML (%s): %s" %
+                     (manifestPath, ex))
             retcode = ex.code
         else:
             try:
@@ -438,40 +467,43 @@ class DriverPackagerLite(object):
 
         return retcode
 
-
     def DriverPackagerLite(self):
         retcode = 0
         if self.manifest != None:
             self.Log("Building driver from manifest %s..." % (self.manifest))
-            retcode = self.CreateFromManifest(os.path.join(self.srcdir, self.manifest))
+            retcode = self.CreateFromManifest(
+                os.path.join(self.srcdir, self.manifest))
         else:
-            self.Log("No manifest filet %s..." % (filename))
+            self.Log("No manifest file")
 
         return retcode
 
     def Log(self, line):
         if self.verbose:
-            print("{}: {}".format(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"), line))
+            print("{}: {}".format(
+                datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"), line))
             sys.stdout.flush()
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true",
-                        help = "Enable verbose.")
+                        help="Enable verbose.")
     parser.add_argument("srcdir",
-                        help = "Directory where c4z source files are located.")
+                        help="Directory where c4z source files are located.")
     parser.add_argument("dstdir",
-                        help = "Directory where c4z files are placed.")
+                        help="Directory where c4z files are placed.")
     parser.add_argument("manifest",
-                        help = "Filename of manifest xml file.",
-                        nargs = '?')
+                        help="Filename of manifest xml file.",
+                        nargs='?')
     parser.add_argument("-ae", "--allowexecute", action="store_true",
-                        help = "[optional] Allow Execute in Lua Command window.")
+                        help="[optional] Allow Execute in Lua Command window.")
     parser.add_argument("-nsq", "--nosquish", action="store_true",
-                        help = "[optional] Block squishing.")
+                        help="[optional] Block squishing.")
     args = parser.parse_args()
 
     return DriverPackagerLite(args)
+
 
 if __name__ == "__main__":
     dp = main()

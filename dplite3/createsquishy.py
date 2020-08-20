@@ -66,7 +66,7 @@ class LuaFile:
                     #print("%s traverse requires: %s" % (self._refName, subFileStr))
 
                     reqFile = LuaFile(subFileStr, self._dirRefs,
-                        self._fileRefs, self._moduleList)
+                                      self._fileRefs, self._moduleList)
                     if(not reqFile.IsAlreadyIncluded()):
                         reqFile.TraverseRequiredFiles()
             else:
@@ -104,7 +104,8 @@ def extractFromProjFile(projFile, dirRefs, fileRefs):
 
             for item in items:
                 if item.tag != 'Item':
-                    print("Invalid XML: Found tag '%s', should be 'Item'" % (item.tag))
+                    print("Invalid XML: Found tag '%s', should be 'Item'" %
+                          (item.tag))
                     continue
 
                 # Mandatory item attributes
@@ -159,7 +160,7 @@ def writeSquishyFile(ModList):
 
     for CurMod in ModList:
         squishyFile.write('Module "%s"\t"%s"\n' %
-                            (CurMod['Ref'], CurMod['FileLoc']))
+                          (CurMod['Ref'], CurMod['FileLoc']))
 
     squishyFile.write('\nOutput "driver.lua.squished"\n')
     squishyFile.close()

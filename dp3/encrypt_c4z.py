@@ -9,20 +9,22 @@ import os
 import xml.etree.ElementTree as ET
 from M2Crypto import BIO, Rand, SMIME, X509
 
+
 def get_devicedata(filename):
     with open(filename, "rb") as file:
         try:
             filestr = file.read()
             devicedata = ET.fromstring(filestr)
         except Exception as ex:
-            print ('Invalid XML - %s.' % ex)
+            print('Invalid XML - %s.' % ex)
             return None
 
     if devicedata is None or not devicedata.tag == "devicedata":
-        print ('devicedata missing')
+        print('devicedata missing')
         return None
 
     return devicedata
+
 
 def get_encrypt_filename(filename):
     devicedata = get_devicedata(filename)
@@ -30,6 +32,7 @@ def get_encrypt_filename(filename):
     if node is None:
         return None
     return node.attrib['file']
+
 
 def encrypt(filename, outfilename):
     PUBLIC_KEY = '''-----BEGIN CERTIFICATE-----
@@ -62,7 +65,7 @@ Zwi18AY=
     with open(filename, 'rb') as file:
         str = file.read()
         buf = BIO.MemoryBuffer(str)
-    
+
         smime = SMIME.SMIME()
         x509 = X509.load_cert_string(PUBLIC_KEY)
         x509_stack = X509.X509_Stack()
@@ -73,14 +76,14 @@ Zwi18AY=
         pkcs7 = smime.encrypt(buf, flags=SMIME.PKCS7_BINARY)
         outbuf = BIO.MemoryBuffer()
         pkcs7.write_der(outbuf)
-    
+
         with open(outfilename, 'wb') as outfile:
             outfile.write(outbuf.read())
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 2:
         sys.exit(0 if encrypt(sys.argv[1], sys.argv[2]) else -1)
     else:
-        print ('No input or output file specified')
+        print('No input or output file specified')
         sys.exit(-1)
-
