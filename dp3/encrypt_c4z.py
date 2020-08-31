@@ -7,7 +7,6 @@ Copyright 2018 Control4 Corporation.  All Rights Reserved.
 import sys
 import os
 import xml.etree.ElementTree as ET
-from M2Crypto import BIO, Rand, SMIME, X509
 
 
 def get_devicedata(filename):
@@ -35,6 +34,8 @@ def get_encrypt_filename(filename):
 
 
 def encrypt(filename, outfilename):
+    from M2Crypto import BIO, Rand, SMIME, X509
+
     PUBLIC_KEY = '''-----BEGIN CERTIFICATE-----
 MIIEUTCCAzmgAwIBAgIJAK1MSC7OcXXEMA0GCSqGSIb3DQEBBQUAMIG+MQswCQYD
 VQQGEwJVUzENMAsGA1UECAwEVXRhaDEPMA0GA1UEBwwGRHJhcGVyMR0wGwYDVQQK
