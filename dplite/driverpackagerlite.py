@@ -13,7 +13,7 @@ This assumes that the root Lua file is driver.lua.
 This assumes that the documentation and icon files are in a www directory.
 
 
-This will decide whether to squish the code according to the 'squishLuah' attribute in the .c4proj file.
+This will decide whether to squish the code according to the 'squishLua' attribute in the .c4proj file.
 If the .c4proj file says to squish, but you would rather keep the directory structure visible, the -nsq option will force no squishing.
 
 If the driver is designated to be encrypted, but not squished, then only driver.lua will be encrypted.
