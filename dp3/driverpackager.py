@@ -1,8 +1,8 @@
-"""
-Copyright 2018 Control4 Corporation.  All Rights Reserved.
-"""
+#!/usr/bin/env python3
 
-#!/usr/bin/python
+"""
+Copyright 2020 Wirepath Home Systems, LLC. All Rights Reserved.
+"""
 
 import argparse
 import sys

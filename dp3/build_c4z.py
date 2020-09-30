@@ -1,6 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
+
 """
-Copyright 2018 Control4 Corporation.  All Rights Reserved.
+Copyright 2020 Wirepath Home Systems, LLC. All Rights Reserved.
 """
 
 import argparse
