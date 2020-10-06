@@ -118,9 +118,7 @@ class DriverPackager(object):
                 c4zScriptEncryption = s.attrib.get('encryption')
                 if c4zScriptEncryption == '2':
                     # Only use the newer encryption
-                    if c4z.squishLua_ and c4zScriptEncryption is None:
-                        c4zScriptFile = c4z.GetSquishyOutputFile(self.srcdir)
-                    elif c4z.squishLua_:
+                    if c4z.squishLua_:
                         c4zScriptFile = c4z.GetSquishyOutputFile(self.srcdir)
                     else:
                         c4zScriptFile = s.attrib.get('file')

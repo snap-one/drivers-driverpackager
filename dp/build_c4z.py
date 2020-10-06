@@ -27,15 +27,15 @@ def GetSquishySource(srcDir):
         squishyFile.close()
 
         for line in squishyContent:
-            if line.startswith("Module") and line is not None:
+            if line is not None and line.startswith("Module"):
                 squishyLines.append(line.split(' '))
 
         for s in squishyLines:
-            if len(s) == 3 and s is not None:
+            if s is not None and len(s) == 3:
                 # If the 3rd column in the squishy file contains data, use that.
                 path = s[2].replace('Module "', '').replace('"', '').replace("\n", '')
                 srcToRemove.append(os.path.basename(path))
-            elif len(s) == 2 and s is not None:
+            elif s is not None and len(s) == 2:
                 # If the 3rd column in the squishy file contains no data, then use the 2nd column.
                 path = s[1].replace('Module "', '').replace('"', '').replace("\n", '').replace(".", os.path.sep) + ".lua"
                 srcToRemove.append(os.path.basename(path))
@@ -51,7 +51,7 @@ def GetSquishyOutputFile(srcDir):
         squishyFile.close()
 
         for line in squishyContent:
-            if line.startswith("Output") and line is not None:
+            if line is not None and line.startswith("Output"):
                 lines.append(line.split(' '))
 
         for s in lines:
@@ -69,7 +69,7 @@ def GetSquishyInputFile(srcDir):
         squishyFile.close()
 
         for line in squishyContent:
-            if line.startswith("Main") and line is not None:
+            if line is not None and line.startswith("Main"):
                 lines.append(line.split(' '))
 
         for s in lines:
@@ -187,6 +187,7 @@ def compressFileList(c4z, dir, root, files, zip, encryptedLua):
             elif encryptedLua is None and squishLua_:
                 path, fName = os.path.split(file["name"])
                 inputFile = GetSquishyInputFile(root)
+                luaPath = ""
                 if fName not in GetSquishySource(root) and fName != "squishy" and fName != inputFile:
                     zip.write(os.path.join(root, fName), arcname=arcPath)
                 if fName == inputFile:

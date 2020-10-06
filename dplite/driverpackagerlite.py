@@ -251,7 +251,7 @@ class DriverPackagerLite(object):
             squishyFile.close()
 
             for line in squishyContent:
-                if line.startswith("Output") and line is not None:
+                if line is not None and line.startswith("Output"):
                     lines.append(line.split(' '))
 
             for s in lines:
