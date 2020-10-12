@@ -37,6 +37,21 @@ Driver Packager requires:
 >   * **-u, --unzip**: Unzip the c4z in the target location
 >   * **-ae, --allowexecute**: Allow Execute in Lua Command window even for encrypted driver (adds C4:AllowExecute(true) to Lua source)
 
+## Using Driver Packager in Github Actions
+
+This repository can also be used to build your c4z projects as a GitHub Action.
+You'll need to use another action or script to push the file output where it needs to go next.
+
+```yaml
+uses: control4/drivers-driverpackager@v1
+with:
+  # Directory (relative to the root of your Git repo) that contains the .c4zproj to build
+  projectDir: ''
+  # Filename for the c4z project to build
+  c4zproj: ''
+
+```
+
 ## Manifest File format
 
 The manifest.xml file is an XML file, with the following format:
