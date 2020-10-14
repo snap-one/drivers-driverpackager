@@ -49,6 +49,9 @@ with:
   projectDir: ''
   # Filename for the c4z project to build
   c4zproj: ''
+  # Directory (relative to projectDir) to output the built c4z file to
+  # Defaults to the parent directory ('./../')
+  outputDir: ''
 
 ```
 

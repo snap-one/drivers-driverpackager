@@ -2,17 +2,19 @@ name: 'Build c4z'
 description: 'Builds a c4z from a c4zproj in specified directory'
 inputs:
   projectDir:
-    description: 'Directory of project'
+    description: 'Directory of project that contains the .c4zproj'
     required: true
   c4zproj:
-    description: 'Name of c4zproj manifest'
+    description: 'Name of c4zproj manifest file'
     required: true
-outputs:
-  time:
-    description: 'The time this ran'
+  outputDir:
+    description: 'Directory to output c4z file, relative to projectDir'
+    required: true
+    default: './../'
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
     - ${{ inputs.projectDir }}
     - ${{ inputs.c4zproj }}
+    - ${{ inputs.outputDir }}
