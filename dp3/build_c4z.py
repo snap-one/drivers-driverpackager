@@ -258,10 +258,6 @@ def compressFileList(c4z, dir, root, files, zip, encryptedLua):
             Log("M2Crypto is required to encrypt the driver (https://gitlab.com/m2crypto/m2crypto).")
         raise
 
-    # Just swallow the exception.
-    except:
-        pass
-
     finally:
         if tempDir:
             shutil.rmtree(tempDir)
