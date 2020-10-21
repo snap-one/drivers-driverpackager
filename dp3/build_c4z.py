@@ -157,6 +157,7 @@ def compressLists(c4z, dirIn, dirsIn, filesIn, encryptedLua=None):
 def compressFileList(c4z, dir, root, files, zip, encryptedLua):
     tempDir = None
     try:
+        squishedLua = None
         tempDir = tempfile.mkdtemp()
         tRoot = root = os.path.normpath(root)
         for file in files:
@@ -251,9 +252,11 @@ def compressFileList(c4z, dir, root, files, zip, encryptedLua):
 
         return squishedLua
 
-    # Just swallow the exception.
-    except:
-        pass
+    except ModuleNotFoundError as err:
+        Log("Error: %s" % err)
+        if err.name == 'M2Crypto':
+            Log("M2Crypto is required to encrypt the driver (https://gitlab.com/m2crypto/m2crypto).")
+        raise
 
     finally:
         if tempDir:
