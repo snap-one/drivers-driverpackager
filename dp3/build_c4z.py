@@ -157,6 +157,7 @@ def compressLists(c4z, dirIn, dirsIn, filesIn, encryptedLua=None):
 def compressFileList(c4z, dir, root, files, zip, encryptedLua):
     tempDir = None
     try:
+        squishedLua = None
         tempDir = tempfile.mkdtemp()
         tRoot = root = os.path.normpath(root)
         for file in files:
