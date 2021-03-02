@@ -76,7 +76,14 @@ Module "drivers-common-internal.global.production"		"./../drivers-common-interna
 Output "./lua/squished.lua"
 ```
 
-would become one file
+would become one file `c4zproj.json`
+
+Option: parse main driver file for require statements and dynamically assemble required Lua packages?  Need hints for submodule/common/template/pre-shipped Lua files?
+
+Option: if squish, also encrypt? Need these to be separate for any reason?
+
+Option: write encrypted tag direct into driver based on this spec, rather than encrypting based on driver XML? Then this file is the spec, not anywhere else.
+
 
 ```JSON
 {
