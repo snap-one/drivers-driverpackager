@@ -179,7 +179,7 @@ class DriverPackager(object):
                 osCommand = prepackageCmd.text.replace("\\", os.path.sep)
                 osCommand = osCommand.replace("/", os.path.sep)
                 if (os.system(osCommand) != 0):
-                    print("Failed to execute prepackage command.")
+                    raise Exception("Failed to execute prepackage command.")
 
         items = xmlRoot.find('Items')
         if items == None:
