@@ -129,15 +129,16 @@ def compressLists(c4z, dirIn, dirsIn, filesIn, encryptedLua=None):
                         c4zDir = c4zDir + root[indexRoot:]
 
                     # Replace file entries with structure value entries
+                    fileList = []
                     for i, f in enumerate(files):
-                        del files[i]
                         if squishLua_ == False:
-                            files.insert(i, {'c4zDir': c4zDir, 'name': f})
+                            fileList.insert(i, {'c4zDir': c4zDir, 'name': f})
                         else:
                             if f not in GetSquishySource(dirIn):
-                                files.insert(i, {'c4zDir': c4zDir, 'name': f})
+                                fileList.insert(i, {'c4zDir': c4zDir, 'name': f})
 
-                    compressFileList(c4z, dirIn, root, files,
+
+                    compressFileList(c4z, dirIn, root, fileList,
                                      zip, encryptedLua)
                     if dir["recurse"] == str('false').lower():
                         break
