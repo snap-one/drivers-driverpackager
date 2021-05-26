@@ -425,7 +425,7 @@ class DriverPackager(object):
                 # execute the command
                 osCommand = postpackageCmd.text.replace("\\", os.path.sep)
                 osCommand = osCommand.replace("/", os.path.sep)
-                if (os.system(osCommand.text) != 0):
+                if (os.system(osCommand) != 0):
                     print("Failed to execute postpackage command.")
 
         return squishLua, c4i
