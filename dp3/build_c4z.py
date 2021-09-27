@@ -114,7 +114,7 @@ def compressLists(c4z, dirIn, dirsIn, filesIn, encryptedLua=None, xmlByteOverrid
                 dirPath = os.path.normpath(dirPath)
                 for root, dirs, files in os.walk(dirPath):
                     root = os.path.normpath(root)
-                    # Ignore hidden files and directories`
+                    # Ignore hidden files and directories
                     files = [f for f in files if not f[0] == '.']
                     dirs[:] = [d for d in dirs if not d[0] == '.']
 
