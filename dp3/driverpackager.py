@@ -45,14 +45,14 @@ class DriverPackager(object):
             self.update_modified = args.update_modified
         else:
             self.update_modified = False
-        if hasattr(args, 'update_version'):
-            if args.update_version:
-                self.update_version = args.update_version[0]
+        if hasattr(args, 'driver_version'):
+            if args.driver_version:
+                self.driver_version = args.driver_version[0]
             else:
                 self.Log("Version argument not found, skipping version update.")
-                self.update_version = False
+                self.driver_version = False
         else:
-            self.update_version = False
+            self.driver_version = False
 
         if not os.path.isdir(self.dstdir):
             os.makedirs(self.dstdir)
@@ -470,14 +470,14 @@ class DriverPackager(object):
                 dateModified.text = timestamp
                 self.Log("Build timestamp %s" % (timestamp))
 
-            if self.update_version:
+            if self.driver_version:
                 driverVersion = xmlRoot.find("version")
                 if driverVersion is None:
                     raise Exception("<version> tag not found")
                 oldVersion = driverVersion.text
                 if oldVersion is None:
                     raise Exception("empty <version> tag")
-                driverVersion.text = self.update_version
+                driverVersion.text = self.driver_version
 
             xmlTree.write(self.bytes_io, encoding='UTF-8', xml_declaration=True)
         except Exception as ex:
@@ -557,7 +557,7 @@ def main():
                         help="[optional] Allow Execute in Lua Command window.")
     parser.add_argument("--update-modified", action="store_true",
                         help="[optional] Update driver modified date.")
-    parser.add_argument("--update-version", nargs=1,
+    parser.add_argument("--driver-version", nargs=1,
                         help="[optional] Update driver version to next argument.")
     args = parser.parse_args()
 
