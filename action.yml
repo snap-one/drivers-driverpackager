@@ -11,6 +11,9 @@ inputs:
     description: 'Directory to output c4z file, relative to projectDir'
     required: true
     default: './../'
+  args:
+    description: 'Additional arguments to pass to DriverPackager'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -18,3 +21,4 @@ runs:
     - ${{ inputs.projectDir }}
     - ${{ inputs.c4zproj }}
     - ${{ inputs.outputDir }}
+    - ${{ inputs.args }}
