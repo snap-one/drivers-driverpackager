@@ -9,6 +9,7 @@ import sys
 import os
 import datetime
 import xml.etree.ElementTree as ElementTree
+from io import BytesIO
 
 try:
     from lxml import etree
@@ -35,10 +36,23 @@ class DriverPackager(object):
         self.dstdir = args.dstdir
         self.manifest = args.manifest
         self.unzip = args.unzip
+        self.bytes_io = BytesIO()
         if hasattr(args, 'allowexecute'):
             self.allowExecute = args.allowexecute
         else:
             self.allowExecute = False
+        if hasattr(args, 'update_modified'):
+            self.update_modified = args.update_modified
+        else:
+            self.update_modified = False
+        if hasattr(args, 'driver_version'):
+            if args.driver_version:
+                self.driver_version = args.driver_version[0]
+            else:
+                self.Log("Version argument not found, skipping version update.")
+                self.driver_version = False
+        else:
+            self.driver_version = False
 
         if not os.path.isdir(self.dstdir):
             os.makedirs(self.dstdir)
@@ -162,6 +176,8 @@ class DriverPackager(object):
 
         # If 'c4i' is detected in the manifest, set variable to true.
         c4i = True if xmlRoot.attrib.get('type') == 'c4i' else False
+        if c4i:
+            self.bytes_io = None
         c4z.setC4i(c4i)
 
         c4zName = '.'.join((driverName, driverType))
@@ -346,13 +362,19 @@ class DriverPackager(object):
 
                 c4zDir = item.attrib.get('c4zDir') if item.attrib.get(
                     'c4zDir') != None else ''
-                c4zFiles.append({'c4zDir': c4zDir, 'name': itemName})
+                if itemName == "driver.xml" and not c4i:
+                    pass
+                else:
+                    c4zFiles.append({'c4zDir': c4zDir, 'name': itemName})
 
         if not c4zDriverXmlFound:
             raise Exception(
                 "DriverPackager: Error, manifest 'file' Item 'driver.xml' was not found.")
 
-        if not c4z.compressLists(os.path.join(self.dstdir, c4zName), root, c4zDirs, c4zFiles, c4zScriptFile):
+        # Update driver.xml
+        self.UpdateDriverXml(os.path.join(root, "driver.xml"))
+
+        if not c4z.compressLists(os.path.join(self.dstdir, c4zName), root, c4zDirs, c4zFiles, c4zScriptFile, xmlByteOverride=self.bytes_io.getvalue()):
             raise Exception("DriverPackager: Building %s failed." % (c4zName))
 
         self.CleanupTmpFile(root)
@@ -371,6 +393,9 @@ class DriverPackager(object):
             # If sourcePath is none then the temp directory was not created because encryption was detected in the driver.xml (see build_c4z.py)
             if sourcePath is None:
                 raise Exception("Encryption was detected in the driver.xml.  When building drivers of type 'c4i', encryption must be disabled.  Please remove the attribute and value of encryption='2' from the <script> element in the driver.xml")
+
+            # Update driver.xml
+            self.UpdateDriverXml(os.path.join(self.srcdir, "driver.xml"))
 
             # Read the driver.xml under the sourcePath and check to see it has a <script> section.
             xmlTree = ElementTree.parse(
@@ -430,6 +455,35 @@ class DriverPackager(object):
 
         return squishLua, c4i
 
+    def UpdateDriverXml(self, driverXmlPath):
+        try:
+            xmlTree = ElementTree.parse(driverXmlPath)
+            xmlRoot = xmlTree.getroot()
+
+            if self.update_modified:
+                dateModified = xmlRoot.find("modified")
+                if dateModified is None:
+                    raise Exception("<modified> tag not found")
+
+                timestamp = datetime.datetime.now()
+                timestamp = timestamp.strftime("%m/%d/%Y %I:%M %p")
+                dateModified.text = timestamp
+                self.Log("Build timestamp %s" % (timestamp))
+
+            if self.driver_version:
+                driverVersion = xmlRoot.find("version")
+                if driverVersion is None:
+                    raise Exception("<version> tag not found")
+                oldVersion = driverVersion.text
+                if oldVersion is None:
+                    raise Exception("empty <version> tag")
+                driverVersion.text = self.driver_version
+
+            xmlTree.write(self.bytes_io, encoding='UTF-8', xml_declaration=True)
+        except Exception as ex:
+            self.Log(ex)
+            raise Exception("Unable to update driver.xml")
+
     def DriverPackager(self):
         retcode = 0
         if self.manifest != None:
@@ -473,10 +527,9 @@ class DriverPackager(object):
 
                 if c4zScriptFile is not None:
                     c4z.compress(os.path.join(self.dstdir, c4zName),
-                                 self.srcdir, c4zScriptFile)
+                                 self.srcdir, c4zScriptFile, xmlByteOverride=self.bytes_io.getvalue())
                 else:
-                    c4z.compress(os.path.join(
-                        self.dstdir, c4zName), self.srcdir, None)
+                    c4z.compress(os.path.join(self.dstdir, c4zName), self.srcdir, None, xmlByteOverride=self.bytes_io.getvalue())
 
         return retcode
 
@@ -502,6 +555,10 @@ def main():
                         help="[optional] Unzip the c4z in the target location.")
     parser.add_argument("-ae", "--allowexecute", action="store_true",
                         help="[optional] Allow Execute in Lua Command window.")
+    parser.add_argument("--update-modified", action="store_true",
+                        help="[optional] Update driver modified date.")
+    parser.add_argument("--driver-version", nargs=1,
+                        help="[optional] Update driver version to next argument.")
     args = parser.parse_args()
 
     return DriverPackager(args)

@@ -99,9 +99,12 @@ def setC4i(c4i):
     return c4i_
 
 
-def compressLists(c4z, dirIn, dirsIn, filesIn, encryptedLua=None):
+def compressLists(c4z, dirIn, dirsIn, filesIn, encryptedLua=None, xmlByteOverride=None):
     try:
         with zipfile.ZipFile(c4z, 'w', compression=zipfile.ZIP_DEFLATED) as zip:
+            if xmlByteOverride:
+                zip.writestr("driver.xml", xmlByteOverride)
+
             # Add files
             compressFileList(c4z, dirIn, dirIn, filesIn, zip, encryptedLua)
 
@@ -264,8 +267,9 @@ def compressFileList(c4z, dir, root, files, zip, encryptedLua):
             shutil.rmtree(tempDir)
 
 
-def compress(c4z, dir, encryptedLua=None):
+def compress(c4z, dir, encryptedLua=None, xmlByteOverride=None):
     tempDir = None
+
     try:
         with zipfile.ZipFile(c4z, 'w', compression=zipfile.ZIP_DEFLATED) as zip:
             for root, dirs, files in os.walk(dir):
@@ -278,6 +282,11 @@ def compress(c4z, dir, encryptedLua=None):
                         continue
 
                     arcpath = os.path.join(os.path.relpath(root, dir), f)
+
+                    if f == "driver.xml" and xmlByteOverride:
+                        zip.writestr("driver.xml", xmlByteOverride)
+                        continue
+
                     if encryptedLua is not None and os.path.normpath(arcpath) == os.path.normpath(encryptedLua):
                         tempDir = tempfile.mkdtemp()
                         tempFile = os.path.join(tempDir, f)
