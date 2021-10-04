@@ -479,7 +479,7 @@ class DriverPackager(object):
                     raise Exception("empty <version> tag")
                 driverVersion.text = self.driver_version
 
-            xmlTree.write(self.bytes_io, encoding='UTF-8', xml_declaration=True)
+            xmlTree.write(self.bytes_io, encoding='UTF-8', xml_declaration=False)
         except Exception as ex:
             self.Log(ex)
             raise Exception("Unable to update driver.xml")
