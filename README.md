@@ -36,6 +36,8 @@ Driver Packager requires:
 >   * **-v, --verbose**: Enable verbose
 >   * **-u, --unzip**: Unzip the c4z in the target location
 >   * **-ae, --allowexecute**: Allow Execute in Lua Command window even for encrypted driver (adds C4:AllowExecute(true) to Lua source)
+>   * **--update-modified**: Updates `modified` tag in the output driver.xml to the current time
+>   * **--driver-version DRIVER_VERSION**: Set driver version (`version` XML tag) to the specified value. Overrides version from the input driver.xml.
 
 ## Using Driver Packager in Github Actions
 
