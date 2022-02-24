@@ -11,6 +11,9 @@ inputs:
     description: 'Directory to output c4z file, relative to projectDir'
     required: true
     default: './../'
+  version:
+    description: 'Version to which the driver will be updated.'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -18,3 +21,4 @@ runs:
     - ${{ inputs.projectDir }}
     - ${{ inputs.c4zproj }}
     - ${{ inputs.outputDir }}
+    - ${{ inputs.version }}
