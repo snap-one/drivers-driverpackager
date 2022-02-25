@@ -2,8 +2,14 @@
 
 cd $1
 
-if [ -z "$4" ]; then
-    python3 /app/dp3/driverpackager.py -v ./ $3 $2 --driver-version $4
-        else
-    python3 /app/dp3/driverpackager.py -v ./ $3 $2
+cmd = python3 /app/dp3/driverpackager.py -v ./ $3 $2
+
+if [ -z "$4"]; then
+    cmd+=" --driver-version $4"
 fi
+
+if [ -z "$5"]; then
+    cmd+=" --update-modified $5"
+fi
+
+eval $cmd
