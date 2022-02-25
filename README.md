@@ -52,7 +52,12 @@ with:
   # Directory (relative to projectDir) to output the built c4z file to
   # Defaults to the parent directory ('./../')
   outputDir: ''
-
+  # Version to which the driver will be updated.
+  # Optional
+  version: ''
+  # Should the driver modified date XML field be updated.
+  # Optional
+  update_modified: ''
 ```
 
 ## Manifest File format

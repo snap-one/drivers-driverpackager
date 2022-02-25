@@ -14,6 +14,10 @@ inputs:
   version:
     description: 'Version to which the driver will be updated.'
     required: false
+  update_modified:
+    type: boolean
+    description: 'Should the driver modified date XML field be updated.'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -22,3 +26,4 @@ runs:
     - ${{ inputs.c4zproj }}
     - ${{ inputs.outputDir }}
     - ${{ inputs.version }}
+    - ${{ inputs.update_modified }}
