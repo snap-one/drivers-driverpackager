@@ -14,8 +14,7 @@ inputs:
   version:
     description: 'Version to which the driver will be updated.'
     required: false
-  update_modified:
-    type: boolean
+  updateModified:
     description: 'Should the driver modified date XML field be updated.'
     required: false
 runs:
@@ -26,4 +25,4 @@ runs:
     - ${{ inputs.c4zproj }}
     - ${{ inputs.outputDir }}
     - ${{ inputs.version }}
-    - ${{ inputs.update_modified }}
+    - ${{ inputs.updateModified }}
