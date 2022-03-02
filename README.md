@@ -57,7 +57,7 @@ with:
   version: ''
   # Should the driver modified date XML field be updated.
   # Optional
-  update_modified: ''
+  updateModified: ''
 ```
 
 ## Manifest File format
