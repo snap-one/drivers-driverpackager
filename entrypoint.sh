@@ -9,7 +9,7 @@ if [ ! -z "$4" ]; then
 fi
 
 if [ ! -z "$5" ]; then
-    cmd="$cmd --update-modified $5"
+    cmd="$cmd --update-modified"
 fi
 
 eval $cmd
