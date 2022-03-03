@@ -8,7 +8,7 @@ if [ ! -z "$INPUT_VERSION" ]; then
     cmd="$cmd --driver-version $INPUT_VERSION"
 fi
 
-if [ ! -z "$INPUT_UPDATEMODIFIED" ]; then
+if [ ! -z $INPUT_UPDATEMODIFIED ] && [ ! $INPUT_UPDATEMODIFIED = false ]; then
     cmd="$cmd --update-modified"
 fi
 
