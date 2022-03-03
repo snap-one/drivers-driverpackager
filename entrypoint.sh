@@ -1,15 +1,15 @@
 #!/bin/sh
 
-cd $1
+cd $INPUT_PROJECTDIR
 
-cmd="python3 /app/dp3/driverpackager.py -v ./ $3 $2"
+cmd="python3 /app/dp3/driverpackager.py -v ./ $INPUT_OUTPUTDIR $INPUT_C4ZPROJ"
 
-if [ ! -z "$4" ]; then
-    cmd="$cmd --driver-version $4"
+if [ ! -z "$INPUT_VERSION" ]; then
+    cmd="$cmd --driver-version $INPUT_VERSION"
 fi
 
-if [ ! -z "$5" ]; then
-    cmd="$cmd --update-modified $5"
+if [ ! -z "$INPUT_UPDATEMODIFIED" ]; then
+    cmd="$cmd --update-modified"
 fi
 
 eval $cmd
