@@ -8,13 +8,8 @@ import argparse
 import sys
 import os
 import datetime
-import xml.etree.ElementTree as ElementTree
 from io import BytesIO
-
-try:
-    from lxml import etree
-except ImportError:
-    import xml.etree.ElementTree as etree
+from lxml import etree
 
 import zipfile
 import shutil
@@ -100,12 +95,12 @@ class DriverPackager(object):
     def CreateFromManifest(self, manifestPath):
         retcode = 0
         try:
-            xmlTree = ElementTree.parse(manifestPath)
+            xmlTree = etree.parse(manifestPath)
             xmlRoot = xmlTree.getroot()
         except IOError as ex:
             self.Log(ex)
             retcode = ex.errno
-        except ElementTree.ParseError as ex:
+        except etree.ParseError as ex:
             self.Log("DriverPackager: Invalid XML (%s): %s" %
                      (manifestPath, ex))
             retcode = ex.code
@@ -121,9 +116,9 @@ class DriverPackager(object):
     def GetEncryptFilename(self, filename):
         c4zScriptFile = None
         try:
-            xmlTree = ElementTree.parse(filename)
+            xmlTree = etree.parse(filename)
             xmlRoot = xmlTree.getroot()
-        except ElementTree.ParseError as ex:
+        except etree.ParseError as ex:
             raise Exception(
                 "DriverPackager: Invalid XML (%s): %s" % (filename, ex))
         else:
@@ -269,7 +264,7 @@ class DriverPackager(object):
                         os.path.join(root, itemName))
 
                     # Read the driver.xml to determine if the 'textfile' attribute exists.
-                    xmlTree = ElementTree.parse(os.path.join(root, itemName))
+                    xmlTree = etree.parse(os.path.join(root, itemName))
                     xmlRootDriver = xmlTree.getroot()
 
                     documentation = xmlRootDriver.findall(
@@ -312,7 +307,7 @@ class DriverPackager(object):
                             child = etree.SubElement(parent, 'documentation')
 
                             # Remove the documentation element.  It will be recreated below.
-                            xmlTree = ElementTree.parse(
+                            xmlTree = etree.parse(
                                 os.path.join(root, itemName))
                             xmlRootDriver = xmlTree.getroot()
                             docElement = xmlRootDriver.findall(
@@ -398,7 +393,7 @@ class DriverPackager(object):
             self.UpdateDriverXml(os.path.join(self.srcdir, "driver.xml"))
 
             # Read the driver.xml under the sourcePath and check to see it has a <script> section.
-            xmlTree = ElementTree.parse(
+            xmlTree = etree.parse(
                 os.path.join(self.srcdir, "driver.xml"))
             xmlRootDriver = xmlTree.getroot()
             script = xmlRootDriver.findall('./config/script')
@@ -457,7 +452,7 @@ class DriverPackager(object):
 
     def UpdateDriverXml(self, driverXmlPath):
         try:
-            xmlTree = ElementTree.parse(driverXmlPath)
+            xmlTree = etree.parse(driverXmlPath)
             xmlRoot = xmlTree.getroot()
 
             if self.update_modified:
