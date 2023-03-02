@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Copyright 2020 Wirepath Home Systems, LLC. All Rights Reserved.
+Copyright 2023 Snap One, LLC. All Rights Reserved.
 """
 
 import argparse
