@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Copyright 2020 Wirepath Home Systems, LLC. All Rights Reserved.
+Copyright 2023 Snap One, LLC. All Rights Reserved.
 """
 
 import argparse
@@ -209,7 +209,9 @@ def compressFileList(c4z, dir, root, files, zip, encryptedLua):
                 inputFile = GetSquishyInputFile(root)
                 luaPath = ""
                 if fName not in GetSquishySource(root) and fName != "squishy" and fName != inputFile:
-                    zip.write(os.path.join(root, fName), arcname=arcPath)
+                    newPath = os.path.join(root, file["name"])
+                    sourcepath = os.path.normpath(newPath)
+                    zip.write(sourcepath, arcname=arcPath)
                 if fName == inputFile:
                     fName = GetSquishyOutputFile(root)
                     zip.write(os.path.join(root, fName), arcname=arcPath)
