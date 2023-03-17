@@ -35,7 +35,7 @@ Driver Packager requires:
 >   * **-h, --help**: show help message and exit
 >   * **-v, --verbose**: Enable verbose
 >   * **-u, --unzip**: Unzip the c4z in the target location
->   * **-ae, --allowexecute**: Allow Execute in Lua Command window even for encrypted driver (adds C4:AllowExecute(true) to Lua source)
+>   * **-ae, --allowexecute**: Allow Execute in Lua Command window even for encrypted driver (adds C4:AllowExecute(true) to Lua source). Also enables DevLog (adds gIsDevelopmentVersionOfDriver = true).
 
 ## Using Driver Packager in Github Actions
 
