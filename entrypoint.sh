@@ -12,4 +12,8 @@ if [ ! -z $INPUT_UPDATEMODIFIED ] && [ ! $INPUT_UPDATEMODIFIED = false ]; then
     cmd="$cmd --update-modified"
 fi
 
+if [ ! -z $INPUT_ALLOWEXECUTE ] && [ ! $INPUT_ALLOWEXECUTE = false ]; then
+    cmd="$cmd --allowexecute"
+fi
+
 eval $cmd
