@@ -58,6 +58,10 @@ with:
   # Should the driver modified date XML field be updated.
   # Optional
   updateModified: ''
+  # Should the driver enable Lua Command window and DevLog common library function
+  # Optional
+  allowexecute: ''
+
 ```
 
 ## Manifest File format
