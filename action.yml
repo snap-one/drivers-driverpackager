@@ -17,6 +17,9 @@ inputs:
   updateModified:
     description: 'Should the driver modified date XML field be updated.'
     required: false
+  allowexecute:
+    description: 'Should the driver enable Lua Command window and DevLog common library function'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -26,3 +29,4 @@ runs:
     - ${{ inputs.outputDir }}
     - ${{ inputs.version }}
     - ${{ inputs.updateModified }}
+    - ${{ inputs.allowexecute }}
