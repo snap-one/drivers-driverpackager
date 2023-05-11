@@ -14,6 +14,7 @@ import tempfile
 import logging
 import codecs
 import datetime
+import re
 import encrypt_c4z
 
 squishLua_ = True
@@ -46,45 +47,32 @@ def GetSquishySource(srcDir):
 
     return srcToRemove
 
+def GetSquishyInputOutputFile(srcDir, keyword):
+    """
+    Common function for parsing Main and Output lines in squishy file
+    :param srcDir: Directory to search for squishy file
+    :param keyword: Main or Output
+    :return: Main or Output files
+    """
+    if os.path.isfile(srcDir + os.path.sep + "squishy"):
+        with open(srcDir + os.path.sep + "squishy") as squishyFile:
+            squishyContent = squishyFile.readlines()
+        squishyFile.close()
+
+        for line in squishyContent:
+            if line is not None and line.startswith(keyword):
+                regexp = f'\s*{keyword}\s+[\'\"](\S+)[\'\"]'
+                match = re.match(regexp, line)
+                if match is not None:
+                    return match.group(1)
+
+    return None
 
 def GetSquishyOutputFile(srcDir):
-    lines = []
-    outputFile = None
-    if os.path.isfile(srcDir + os.path.sep + "squishy"):
-        with open(srcDir + os.path.sep + "squishy") as squishyFile:
-            squishyContent = squishyFile.readlines()
-        squishyFile.close()
-
-        for line in squishyContent:
-            if line is not None and line.startswith("Output") :
-                lines.append(line.split(' '))
-
-        for s in lines:
-            path = s[1].replace('Output "', '').replace(
-                '"', '').replace("\n", '')
-            outputFile = path
-
-    return str(outputFile).rstrip('\r')
-
+    return GetSquishyInputOutputFile(srcDir, "Output")
 
 def GetSquishyInputFile(srcDir):
-    lines = []
-    inputFile = None
-    if os.path.isfile(srcDir + os.path.sep + "squishy"):
-        with open(srcDir + os.path.sep + "squishy") as squishyFile:
-            squishyContent = squishyFile.readlines()
-        squishyFile.close()
-
-        for line in squishyContent:
-            if line is not None and line.startswith("Main"):
-                lines.append(line.split(' '))
-
-        for s in lines:
-            path = s[1].replace('Main "', '').replace(
-                '"', '').replace("\n", '')
-            inputFile = path
-
-    return str(inputFile).rstrip('\r')
+    return GetSquishyInputOutputFile(srcDir, "Main")
 
 
 def setSquishLua(squishLua):
