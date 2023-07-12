@@ -70,6 +70,9 @@ class DriverPackager(object):
         # cmdLine.append('-q')
         cmdLine.append('--no-minify')
 
+        if self.verbose:
+            cmdLine.append('--vv')
+
         cmdLine.append(root)
 
         try:
