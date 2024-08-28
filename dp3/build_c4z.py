@@ -61,7 +61,7 @@ def GetSquishyInputOutputFile(srcDir, keyword):
 
         for line in squishyContent:
             if line is not None and line.startswith(keyword):
-                regexp = f'\s*{keyword}\s+[\'\"](\S+)[\'\"]'
+                regexp = fr'\s*{keyword}\s+[\'\"](\S+)[\'\"]'
                 match = re.match(regexp, line)
                 if match is not None:
                     return match.group(1)
