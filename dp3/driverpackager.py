@@ -72,9 +72,6 @@ class DriverPackager(object):
             cmdLine.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "squish"))
             os.environ['PATH'] = os.path.dirname(os.path.realpath(os.path.realpath(__file__))) + os.pathsep + oldPath
 
-        # cmdLine.append('-q')
-        cmdLine.append('--no-minify')
-
         if self.verbose:
             cmdLine.append('--vv')
 
